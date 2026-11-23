@@ -1,0 +1,562 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOS Inter-View</title>
+
+    <link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet">
+    <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #0b1018;
+            --panel: #111925;
+            --panel-2: #172231;
+            --border: #263447;
+            --text: #e6edf5;
+            --muted: #8b9aab;
+            --accent: #39b8a5;
+            --accent-hover: #50d1bd;
+            --danger: #e16b6b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            font-size: 13px;
+        }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .topbar {
+            height: 58px;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+            background: #101722;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: #173b3b;
+            color: var(--accent);
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .brand-name {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: .3px;
+        }
+
+        .brand-subtitle {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e5ad52;
+        }
+
+        .workspace {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .sidebar {
+            width: 340px;
+            min-width: 340px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background: var(--panel);
+            border-right: 1px solid var(--border);
+        }
+
+        .section {
+            padding: 19px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #a9bacb;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .section-number {
+            color: var(--accent);
+            font-size: 10px;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        input, select {
+            width: 100%;
+            height: 37px;
+            padding: 0 10px;
+            outline: none;
+            color: var(--text);
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .coordinate-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .unit-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .unit-input input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .unit {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .hint {
+            margin-top: 9px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .primary-button {
+            width: 100%;
+            height: 41px;
+            margin-top: 17px;
+            border: 0;
+            border-radius: 5px;
+            background: var(--accent);
+            color: #071815;
+            font-weight: 700;
+            cursor: not-allowed;
+            opacity: .75;
+        }
+
+        .primary-button:disabled {
+            cursor: not-allowed;
+        }
+
+        .result-empty {
+            padding: 17px 12px;
+            text-align: center;
+            color: var(--muted);
+            background: var(--panel-2);
+            border: 1px dashed #344357;
+            border-radius: 6px;
+            line-height: 1.6;
+        }
+
+        .result-icon {
+            margin-bottom: 8px;
+            color: #65788d;
+            font-size: 23px;
+        }
+
+        .map-area {
+            position: relative;
+            flex: 1;
+            min-width: 0;
+            background: #101923;
+        }
+
+        #map {
+            position: absolute;
+            inset: 0;
+        }
+
+        .map-toolbar {
+            position: absolute;
+            z-index: 2;
+            top: 16px;
+            left: 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .map-chip {
+            padding: 9px 12px;
+            color: #dce7f1;
+            background: rgba(17, 25, 37, .94);
+            border: 1px solid #354457;
+            border-radius: 5px;
+            box-shadow: 0 3px 12px #0005;
+            font-size: 11px;
+        }
+
+        .map-instruction {
+            position: absolute;
+            z-index: 2;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 15px;
+            color: #dce7f1;
+            background: rgba(17, 25, 37, .94);
+            border: 1px solid #354457;
+            border-radius: 5px;
+            white-space: nowrap;
+            box-shadow: 0 3px 12px #0005;
+        }
+
+        .map-instruction strong {
+            color: var(--accent);
+        }
+
+        .observer-marker {
+            width: 18px;
+            height: 18px;
+            border: 3px solid white;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 0 5px #39b8a555, 0 2px 8px #0009;
+        }
+
+        .footer {
+            height: 27px;
+            min-height: 27px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            color: #748497;
+            background: #0d141e;
+            border-top: 1px solid var(--border);
+            font-size: 10px;
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                width: 290px;
+                min-width: 290px;
+            }
+
+            .topbar {
+                padding: 0 12px;
+            }
+
+            .topbar-right {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app">
+
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-icon">◉</div>
+            <div>
+                <div class="brand-name">LOS INTER-VIEW</div>
+                <div class="brand-subtitle">Line of Sight Analysis</div>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <div class="status">
+                <span class="status-dot"></span>
+                <span>Backend connection pending</span>
+            </div>
+            <span>v0.1.0</span>
+        </div>
+    </header>
+
+    <main class="workspace">
+
+        <aside class="sidebar">
+
+            <section class="section">
+                <div class="section-heading">
+                    <span>Analysis mode</span>
+                    <span class="section-number">01</span>
+                </div>
+
+                <div class="field">
+                    <label for="analysis-mode">Analysis type</label>
+                    <select id="analysis-mode">
+                        <option value="intervisibility">Point-to-point intervisibility</option>
+                        <option value="route">Route visibility</option>
+                        <option value="viewshed">Viewshed analysis</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
+                    <span>Observer settings</span>
+                    <span class="section-number">02</span>
+                </div>
+
+                <div class="coordinate-grid">
+                    <div class="field">
+                        <label for="longitude">Longitude</label>
+                        <input id="longitude" type="number" step="any" value="2.35">
+                    </div>
+
+                    <div class="field">
+                        <label for="latitude">Latitude</label>
+                        <input id="latitude" type="number" step="any" value="48.86">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="observer-height">Observer height</label>
+                    <div class="unit-input">
+                        <input id="observer-height" type="number" min="0" value="2">
+                        <span class="unit">meters AGL</span>
+                    </div>
+                </div>
+
+                <div class="field" id="flight-field">
+                    <label for="flight-altitude">Flight altitude</label>
+                    <div class="unit-input">
+                        <input id="flight-altitude" type="number" min="0" value="120">
+                        <span class="unit">meters AGL</span>
+                    </div>
+                </div>
+
+                <p class="hint">
+                    Click anywhere on the map to move the observer.
+                </p>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
+                    <span>Terrain data</span>
+                    <span class="section-number">03</span>
+                </div>
+
+                <div class="field">
+                    <label for="terrain-source">Elevation source</label>
+                    <select id="terrain-source">
+                        <option value="dted">DTED</option>
+                    </select>
+                </div>
+
+                <p class="hint">
+                    Terrain dataset loading will be available when the backend is connected.
+                </p>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
+                    <span>Analysis controls</span>
+                    <span class="section-number">04</span>
+                </div>
+
+                <button class="primary-button" disabled>
+                    Run LOS Analysis
+                </button>
+
+                <p class="hint">
+                    Analysis engine not connected yet.
+                </p>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
+                    <span>Results</span>
+                    <span class="section-number">05</span>
+                </div>
+
+                <div class="result-empty">
+                    <div class="result-icon">◎</div>
+                    No analysis available.<br>
+                    Run an analysis to see results here.
+                </div>
+            </section>
+
+        </aside>
+
+        <section class="map-area">
+            <div id="map"></div>
+
+            <div class="map-toolbar">
+                <div class="map-chip">MAP VIEW</div>
+                <div class="map-chip" id="coordinate-display">48.8600° N, 2.3500° E</div>
+            </div>
+
+            <div class="map-instruction">
+                <strong>● Observer</strong> — Click on the map to reposition
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <span>LOS INTER-VIEW · TERRAIN ANALYSIS</span>
+        <span>Map data © OpenStreetMap contributors · © CARTO</span>
+    </footer>
+
+</div>
+
+<script>
+    const initialPosition = [2.35, 48.86];
+
+    const map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://tiles.openfreemap.org/styles/liberty',
+        center: initialPosition,
+        zoom: 5
+    });
+
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+    map.addControl(new maplibregl.ScaleControl(), 'bottom-right');
+
+    const markerElement = document.createElement('div');
+    markerElement.className = 'observer-marker';
+
+    const observerMarker = new maplibregl.Marker({
+        element: markerElement
+    })
+        .setLngLat(initialPosition)
+        .addTo(map);
+
+    const longitudeInput = document.getElementById('longitude');
+    const latitudeInput = document.getElementById('latitude');
+    const coordinateDisplay = document.getElementById('coordinate-display');
+
+    function updateObserver(longitude, latitude) {
+        longitudeInput.value = longitude.toFixed(6);
+        latitudeInput.value = latitude.toFixed(6);
+
+        coordinateDisplay.textContent =
+            `${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° E`;
+
+        observerMarker.setLngLat([longitude, latitude]);
+    }
+
+    map.on('click', function(event) {
+        updateObserver(event.lngLat.lng, event.lngLat.lat);
+    });
+
+    function updateMarkerFromInputs() {
+        const longitude = Number(longitudeInput.value);
+        const latitude = Number(latitudeInput.value);
+
+        if (
+            Number.isFinite(longitude) &&
+            Number.isFinite(latitude) &&
+            longitude >= -180 &&
+            longitude <= 180 &&
+            latitude >= -90 &&
+            latitude <= 90
+        ) {
+            updateObserver(longitude, latitude);
+            map.easeTo({
+                center: [longitude, latitude],
+                duration: 500
+            });
+        }
+    }
+
+    longitudeInput.addEventListener('change', updateMarkerFromInputs);
+    latitudeInput.addEventListener('change', updateMarkerFromInputs);
+
+    const analysisMode = document.getElementById('analysis-mode');
+    const flightField = document.getElementById('flight-field');
+
+    analysisMode.addEventListener('change', function() {
+        flightField.style.display =
+            analysisMode.value === 'viewshed' ? 'block' : 'none';
+    });
+
+    flightField.style.display =
+        analysisMode.value === 'viewshed' ? 'block' : 'none';
+</script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+﻿
+[package]
+name = "los-inter-view"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+gdal = { path = "vendor/gdal-upstream", features = ["bindgen"] }
+rayon = "1"
+tower-http = { version = "0.7.1", features = ["cors", "fs"] }
+
+[patch.crates-io]
+gdal-sys = { path = "vendor/gdal-upstream/gdal-sys" }
+
