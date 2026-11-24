@@ -1,341 +1,129 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOS Inter-View</title>
-
     <link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet">
     <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
-
     <style>
         :root {
             color-scheme: dark;
             --bg: #0b1018;
             --panel: #111925;
-            --panel-2: #172231;
+            --panel2: #172231;
             --border: #263447;
             --text: #e6edf5;
             --muted: #8b9aab;
             --accent: #39b8a5;
-            --accent-hover: #50d1bd;
             --danger: #e16b6b;
+            --success: #39b8a5;
         }
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
-            margin: 0;
-            height: 100vh;
-            overflow: hidden;
-            background: var(--bg);
-            color: var(--text);
-            font-family: Inter, "Segoe UI", Arial, sans-serif;
-            font-size: 13px;
+            margin: 0; height: 100vh; overflow: hidden; background: var(--bg);
+            color: var(--text); font: 13px Inter, "Segoe UI", Arial, sans-serif;
         }
-
-        button, input, select {
-            font: inherit;
-        }
-
-        .app {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
+        button, input, select { font: inherit; }
+        .app { display: flex; flex-direction: column; height: 100vh; }
         .topbar {
-            height: 58px;
-            min-height: 58px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 22px;
-            background: #101722;
+            height: 58px; min-height: 58px; display: flex; align-items: center;
+            justify-content: space-between; padding: 0 22px; background: #101722;
             border-bottom: 1px solid var(--border);
         }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .brand { display: flex; align-items: center; gap: 12px; }
         .brand-icon {
-            width: 34px;
-            height: 34px;
-            display: grid;
-            place-items: center;
-            border-radius: 9px;
-            background: #173b3b;
-            color: var(--accent);
-            font-size: 19px;
-            font-weight: 700;
+            width: 34px; height: 34px; display: grid; place-items: center;
+            border-radius: 9px; background: #173b3b; color: var(--accent);
+            font-size: 19px; font-weight: 700;
         }
-
-        .brand-name {
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: .3px;
-        }
-
+        .brand-name { font-size: 15px; font-weight: 700; letter-spacing: .3px; }
         .brand-subtitle {
-            margin-top: 3px;
-            color: var(--muted);
-            font-size: 10px;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
+            margin-top: 3px; color: var(--muted); font-size: 10px;
+            letter-spacing: 1.2px; text-transform: uppercase;
         }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #e5ad52;
-        }
-
-        .workspace {
-            display: flex;
-            flex: 1;
-            min-height: 0;
-        }
-
+        .topbar-right { display: flex; align-items: center; gap: 18px; color: var(--muted); }
+        .status { display: flex; align-items: center; gap: 7px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #e5ad52; }
+        .status-dot.ok { background: var(--success); }
+        .status-dot.error { background: var(--danger); }
+        .workspace { display: flex; flex: 1; min-height: 0; }
         .sidebar {
-            width: 340px;
-            min-width: 340px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            background: var(--panel);
-            border-right: 1px solid var(--border);
+            width: 340px; min-width: 340px; display: flex; flex-direction: column;
+            overflow-y: auto; background: var(--panel); border-right: 1px solid var(--border);
         }
-
-        .section {
-            padding: 19px 18px;
-            border-bottom: 1px solid var(--border);
-        }
-
+        .section { padding: 17px 18px; border-bottom: 1px solid var(--border); }
         .section-heading {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #a9bacb;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; color: #a9bacb; font-size: 11px;
+            font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
         }
-
-        .section-number {
-            color: var(--accent);
-            font-size: 10px;
-        }
-
-        .field {
-            margin-bottom: 14px;
-        }
-
-        .field:last-child {
-            margin-bottom: 0;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 7px;
-            color: var(--muted);
-            font-size: 11px;
-        }
-
+        .section-number { color: var(--accent); font-size: 10px; }
+        .field { margin-bottom: 13px; }
+        .field:last-child { margin-bottom: 0; }
+        label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; }
         input, select {
-            width: 100%;
-            height: 37px;
-            padding: 0 10px;
-            outline: none;
-            color: var(--text);
-            background: var(--panel-2);
-            border: 1px solid var(--border);
-            border-radius: 5px;
+            width: 100%; height: 36px; padding: 0 10px; outline: none; color: var(--text);
+            background: var(--panel2); border: 1px solid var(--border); border-radius: 5px;
         }
-
-        input:focus, select:focus {
-            border-color: var(--accent);
+        input:focus, select:focus { border-color: var(--accent); }
+        .coordinate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .unit-input { display: flex; align-items: center; gap: 8px; }
+        .unit-input input { flex: 1; min-width: 0; }
+        .unit { color: var(--muted); font-size: 11px; white-space: nowrap; }
+        .hint { margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+        .button-row { display: flex; gap: 8px; margin-top: 14px; }
+        button {
+            min-height: 38px; padding: 0 12px; border: 1px solid var(--border);
+            border-radius: 5px; background: var(--panel2); color: var(--text); cursor: pointer;
         }
-
-        select {
-            cursor: pointer;
+        button.primary {
+            flex: 1; border: 0; background: var(--accent); color: #071815; font-weight: 700;
         }
-
-        .coordinate-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        button:disabled { opacity: .55; cursor: wait; }
+        .result {
+            padding: 12px; background: var(--panel2); border: 1px solid var(--border);
+            border-radius: 6px; line-height: 1.7; color: #d6e0ea;
         }
-
-        .unit-input {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .unit-input input {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .unit {
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .hint {
-            margin-top: 9px;
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.5;
-        }
-
-        .primary-button {
-            width: 100%;
-            height: 41px;
-            margin-top: 17px;
-            border: 0;
-            border-radius: 5px;
-            background: var(--accent);
-            color: #071815;
-            font-weight: 700;
-            cursor: not-allowed;
-            opacity: .75;
-        }
-
-        .primary-button:disabled {
-            cursor: not-allowed;
-        }
-
-        .result-empty {
-            padding: 17px 12px;
-            text-align: center;
-            color: var(--muted);
-            background: var(--panel-2);
-            border: 1px dashed #344357;
-            border-radius: 6px;
-            line-height: 1.6;
-        }
-
-        .result-icon {
-            margin-bottom: 8px;
-            color: #65788d;
-            font-size: 23px;
-        }
-
-        .map-area {
-            position: relative;
-            flex: 1;
-            min-width: 0;
-            background: #101923;
-        }
-
-        #map {
-            position: absolute;
-            inset: 0;
-        }
-
+        .result.empty { color: var(--muted); text-align: center; border-style: dashed; }
+        .result strong { color: var(--accent); }
+        .result .bad { color: var(--danger); }
+        .map-area { position: relative; flex: 1; min-width: 0; background: #101923; }
+        #map { position: absolute; inset: 0; }
         .map-toolbar {
-            position: absolute;
-            z-index: 2;
-            top: 16px;
-            left: 16px;
-            display: flex;
-            gap: 8px;
+            position: absolute; z-index: 2; top: 16px; left: 16px;
+            display: flex; gap: 8px; flex-wrap: wrap;
         }
-
         .map-chip {
-            padding: 9px 12px;
-            color: #dce7f1;
-            background: rgba(17, 25, 37, .94);
-            border: 1px solid #354457;
-            border-radius: 5px;
-            box-shadow: 0 3px 12px #0005;
+            padding: 9px 12px; color: #dce7f1; background: rgba(17,25,37,.94);
+            border: 1px solid #354457; border-radius: 5px; box-shadow: 0 3px 12px #0005;
             font-size: 11px;
         }
-
         .map-instruction {
-            position: absolute;
-            z-index: 2;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 15px;
-            color: #dce7f1;
-            background: rgba(17, 25, 37, .94);
-            border: 1px solid #354457;
-            border-radius: 5px;
-            white-space: nowrap;
-            box-shadow: 0 3px 12px #0005;
+            position: absolute; z-index: 2; bottom: 24px; left: 50%;
+            transform: translateX(-50%); padding: 10px 15px; color: #dce7f1;
+            background: rgba(17,25,37,.94); border: 1px solid #354457;
+            border-radius: 5px; white-space: nowrap; box-shadow: 0 3px 12px #0005;
         }
-
-        .map-instruction strong {
-            color: var(--accent);
-        }
-
+        .map-instruction strong { color: var(--accent); }
         .observer-marker {
-            width: 18px;
-            height: 18px;
-            border: 3px solid white;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 0 5px #39b8a555, 0 2px 8px #0009;
+            width: 18px; height: 18px; border: 3px solid white; border-radius: 50%;
+            background: var(--accent); box-shadow: 0 0 0 5px #39b8a555, 0 2px 8px #0009;
         }
-
         .footer {
-            height: 27px;
-            min-height: 27px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 14px;
-            color: #748497;
-            background: #0d141e;
-            border-top: 1px solid var(--border);
-            font-size: 10px;
+            height: 27px; min-height: 27px; display: flex; align-items: center;
+            justify-content: space-between; padding: 0 14px; color: #748497;
+            background: #0d141e; border-top: 1px solid var(--border); font-size: 10px;
         }
-
         @media (max-width: 760px) {
-            .sidebar {
-                width: 290px;
-                min-width: 290px;
-            }
-
-            .topbar {
-                padding: 0 12px;
-            }
-
-            .topbar-right {
-                gap: 8px;
-            }
+            .sidebar { width: 290px; min-width: 290px; }
+            .topbar { padding: 0 12px; }
+            .topbar-right { gap: 8px; font-size: 10px; }
         }
     </style>
 </head>
-
 <body>
 <div class="app">
-
     <header class="topbar">
         <div class="brand">
             <div class="brand-icon">◉</div>
@@ -344,219 +132,502 @@
                 <div class="brand-subtitle">Line of Sight Analysis</div>
             </div>
         </div>
-
         <div class="topbar-right">
-            <div class="status">
-                <span class="status-dot"></span>
-                <span>Backend connection pending</span>
-            </div>
-            <span>v0.1.0</span>
+            <div class="status"><span class="status-dot" id="status-dot"></span><span id="status-text">Connexion au backend…</span></div>
+            <span>v0.2.0</span>
         </div>
     </header>
 
     <main class="workspace">
-
         <aside class="sidebar">
-
             <section class="section">
-                <div class="section-heading">
-                    <span>Analysis mode</span>
-                    <span class="section-number">01</span>
-                </div>
-
+                <div class="section-heading"><span>Mode d'analyse</span><span class="section-number">01</span></div>
                 <div class="field">
-                    <label for="analysis-mode">Analysis type</label>
+                    <label for="analysis-mode">Type d'analyse</label>
                     <select id="analysis-mode">
-                        <option value="intervisibility">Point-to-point intervisibility</option>
-                        <option value="route">Route visibility</option>
-                        <option value="viewshed">Viewshed analysis</option>
+                        <option value="viewshed">Viewshed — visibilité depuis un observateur</option>
+                        <option value="intervisibility">Intervisibilité — deux points</option>
+                        <option value="route">Visibilité le long d'une route</option>
                     </select>
                 </div>
             </section>
 
             <section class="section">
-                <div class="section-heading">
-                    <span>Observer settings</span>
-                    <span class="section-number">02</span>
-                </div>
-
+                <div class="section-heading"><span>Observateur</span><span class="section-number">02</span></div>
                 <div class="coordinate-grid">
                     <div class="field">
                         <label for="longitude">Longitude</label>
-                        <input id="longitude" type="number" step="any" value="2.35">
+                        <input id="longitude" type="number" step="any" value="5.500000">
                     </div>
-
                     <div class="field">
                         <label for="latitude">Latitude</label>
-                        <input id="latitude" type="number" step="any" value="48.86">
+                        <input id="latitude" type="number" step="any" value="43.500000">
                     </div>
                 </div>
-
-                <div class="field">
-                    <label for="observer-height">Observer height</label>
-                    <div class="unit-input">
-                        <input id="observer-height" type="number" min="0" value="2">
-                        <span class="unit">meters AGL</span>
-                    </div>
+                <div class="field" id="observer-height-field">
+                    <label for="observer-height">Hauteur des points (AGL)</label>
+                    <div class="unit-input"><input id="observer-height" type="number" min="0" step="1" value="2"><span class="unit">mètres</span></div>
                 </div>
-
                 <div class="field" id="flight-field">
-                    <label for="flight-altitude">Flight altitude</label>
-                    <div class="unit-input">
-                        <input id="flight-altitude" type="number" min="0" value="120">
-                        <span class="unit">meters AGL</span>
-                    </div>
+                    <label for="flight-altitude">Hauteur de l'observateur (AGL)</label>
+                    <div class="unit-input"><input id="flight-altitude" type="number" min="0" step="1" value="100"><span class="unit">mètres</span></div>
                 </div>
-
-                <p class="hint">
-                    Click anywhere on the map to move the observer.
-                </p>
+                <div class="field" id="radius-field">
+                    <label for="viewshed-radius">Rayon du viewshed</label>
+                    <div class="unit-input"><input id="viewshed-radius" type="number" min="100" step="100" value="10000"><span class="unit">mètres</span></div>
+                </div>
+                <p class="hint" id="interaction-hint">Clique sur la carte pour déplacer l'observateur. Le viewshed sera recalculé.</p>
             </section>
 
             <section class="section">
-                <div class="section-heading">
-                    <span>Terrain data</span>
-                    <span class="section-number">03</span>
+                <div class="section-heading"><span>Contrôles</span><span class="section-number">03</span></div>
+                <div class="button-row">
+                    <button class="primary" id="run-button">Calculer</button>
+                    <button id="clear-button">Effacer</button>
                 </div>
-
-                <div class="field">
-                    <label for="terrain-source">Elevation source</label>
-                    <select id="terrain-source">
-                        <option value="dted">DTED</option>
-                    </select>
-                </div>
-
-                <p class="hint">
-                    Terrain dataset loading will be available when the backend is connected.
-                </p>
+                <p class="hint">Le calcul est effectué par le backend Rust à partir du DTED chargé sur le serveur.</p>
             </section>
 
             <section class="section">
-                <div class="section-heading">
-                    <span>Analysis controls</span>
-                    <span class="section-number">04</span>
-                </div>
-
-                <button class="primary-button" disabled>
-                    Run LOS Analysis
-                </button>
-
-                <p class="hint">
-                    Analysis engine not connected yet.
-                </p>
+                <div class="section-heading"><span>Résultats</span><span class="section-number">04</span></div>
+                <div class="result empty" id="results">Aucun calcul effectué.</div>
             </section>
-
-            <section class="section">
-                <div class="section-heading">
-                    <span>Results</span>
-                    <span class="section-number">05</span>
-                </div>
-
-                <div class="result-empty">
-                    <div class="result-icon">◎</div>
-                    No analysis available.<br>
-                    Run an analysis to see results here.
-                </div>
-            </section>
-
         </aside>
 
         <section class="map-area">
             <div id="map"></div>
-
             <div class="map-toolbar">
-                <div class="map-chip">MAP VIEW</div>
-                <div class="map-chip" id="coordinate-display">48.8600° N, 2.3500° E</div>
+                <div class="map-chip">DTED N43 · EPSG:4326</div>
+                <div class="map-chip" id="coordinate-display">43.5000° N, 5.5000° E</div>
+                <div class="map-chip" id="map-status">En attente</div>
             </div>
-
-            <div class="map-instruction">
-                <strong>● Observer</strong> — Click on the map to reposition
-            </div>
+            <div class="map-instruction" id="map-instruction"><strong>● Observateur</strong> — Clique sur la carte pour le déplacer</div>
         </section>
-
     </main>
 
     <footer class="footer">
-        <span>LOS INTER-VIEW · TERRAIN ANALYSIS</span>
-        <span>Map data © OpenStreetMap contributors · © CARTO</span>
+        <span>LOS INTER-VIEW · ANALYSE DE VISIBILITÉ DU TERRAIN</span>
+        <span>Fond cartographique © OpenStreetMap contributors · OpenFreeMap</span>
     </footer>
-
 </div>
 
 <script>
-    const initialPosition = [2.35, 48.86];
-
+(() => {
+    const API = '';
+    const initialPosition = [5.5, 43.5];
     const map = new maplibregl.Map({
         container: 'map',
         style: 'https://tiles.openfreemap.org/styles/liberty',
         center: initialPosition,
-        zoom: 5
+        zoom: 9
     });
-
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
     map.addControl(new maplibregl.ScaleControl(), 'bottom-right');
 
+    const $ = id => document.getElementById(id);
+    const longitudeInput = $('longitude');
+    const latitudeInput = $('latitude');
+    const modeInput = $('analysis-mode');
+    const observerHeightInput = $('observer-height');
+    const flightAltitudeInput = $('flight-altitude');
+    const radiusInput = $('viewshed-radius');
+    const results = $('results');
+    const runButton = $('run-button');
+    const statusDot = $('status-dot');
+    const statusText = $('status-text');
+    const mapStatus = $('map-status');
+    const coordinateDisplay = $('coordinate-display');
+    const mapInstruction = $('map-instruction');
+    let analysisPoints = [];
+    let viewshedCanvas = null;
+    let viewshedBoundsFitted = false;
+    let mapReady = false;
+    let debounceHandle = null;
+
     const markerElement = document.createElement('div');
     markerElement.className = 'observer-marker';
+    const observerMarker = new maplibregl.Marker({ element: markerElement })
+        .setLngLat(initialPosition).addTo(map);
 
-    const observerMarker = new maplibregl.Marker({
-        element: markerElement
-    })
-        .setLngLat(initialPosition)
-        .addTo(map);
-
-    const longitudeInput = document.getElementById('longitude');
-    const latitudeInput = document.getElementById('latitude');
-    const coordinateDisplay = document.getElementById('coordinate-display');
-
-    function updateObserver(longitude, latitude) {
-        longitudeInput.value = longitude.toFixed(6);
-        latitudeInput.value = latitude.toFixed(6);
-
+    function setStatus(text, kind = '') {
+        statusText.textContent = text;
+        statusDot.className = 'status-dot' + (kind ? ' ' + kind : '');
+    }
+    function setMapStatus(text) { mapStatus.textContent = text; }
+    function setResults(html, empty = false) {
+        results.className = 'result' + (empty ? ' empty' : '');
+        results.innerHTML = html;
+    }
+    function getNumber(input, label, min = null) {
+        const value = Number(input.value);
+        if (!Number.isFinite(value) || (min !== null && value < min)) {
+            throw new Error(`${label} : valeur invalide.`);
+        }
+        return value;
+    }
+    function updateObserver(lon, lat, moveMap = false) {
+        longitudeInput.value = lon.toFixed(6);
+        latitudeInput.value = lat.toFixed(6);
         coordinateDisplay.textContent =
-            `${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° E`;
-
-        observerMarker.setLngLat([longitude, latitude]);
+            `${Math.abs(lat).toFixed(4)}° ${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lon).toFixed(4)}° ${lon >= 0 ? 'E' : 'W'}`;
+        observerMarker.setLngLat([lon, lat]);
+        if (moveMap) map.easeTo({ center: [lon, lat], duration: 350 });
+    }
+    function clearAnalysisGraphics() {
+        if (map.getLayer('viewshed-layer')) map.removeLayer('viewshed-layer');
+        if (map.getSource('viewshed-source')) map.removeSource('viewshed-source');
+        if (map.getSource('analysis-source')) {
+            map.getSource('analysis-source').setData({ type: 'FeatureCollection', features: [] });
+        }
+        analysisPoints = [];
+    }
+    function setAnalysisFeatures(features) {
+        const data = { type: 'FeatureCollection', features };
+        const source = map.getSource('analysis-source');
+        if (source) source.setData(data);
+    }
+    function pointFeature(coords, index) {
+        return {
+            type: 'Feature',
+            properties: { index: index + 1 },
+            geometry: { type: 'Point', coordinates: coords }
+        };
+    }
+    function lineFeature(coords, visible = true) {
+        return {
+            type: 'Feature',
+            properties: { visible },
+            geometry: { type: 'LineString', coordinates: coords }
+        };
     }
 
-    map.on('click', function(event) {
-        updateObserver(event.lngLat.lng, event.lngLat.lat);
-    });
+    async function postJson(path, body) {
+        const response = await fetch(API + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const text = await response.text();
+        let data;
+        try { data = JSON.parse(text); }
+        catch { throw new Error(`Réponse serveur illisible (HTTP ${response.status}).`); }
+        if (!response.ok) {
+            const message = typeof data === 'string' ? data : (data.message || data.error || text);
+            throw new Error(message);
+        }
+        return data;
+    }
 
-    function updateMarkerFromInputs() {
-        const longitude = Number(longitudeInput.value);
-        const latitude = Number(latitudeInput.value);
+    function displayViewshed(data) {
+        const width = data.largeur;
+        const height = data.hauteur;
+        if (!width || !height || !Array.isArray(data.visibilite) ||
+            data.visibilite.length !== width * height) {
+            throw new Error('La grille de visibilité reçue est incomplète.');
+        }
 
-        if (
-            Number.isFinite(longitude) &&
-            Number.isFinite(latitude) &&
-            longitude >= -180 &&
-            longitude <= 180 &&
-            latitude >= -90 &&
-            latitude <= 90
-        ) {
-            updateObserver(longitude, latitude);
-            map.easeTo({
-                center: [longitude, latitude],
-                duration: 500
-            });
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext('2d');
+        const image = context.createImageData(width, height);
+        const values = data.visibilite;
+
+        for (let i = 0; i < values.length; i++) {
+            if (values[i] === 1) {
+                const p = i * 4;
+                image.data[p] = 48;
+                image.data[p + 1] = 210;
+                image.data[p + 2] = 155;
+                image.data[p + 3] = 145;
+            }
+        }
+        context.putImageData(image, 0, 0);
+
+        const t = data.geotransform;
+        const lon0 = t[0];
+        const lat0 = t[3];
+        const lon1 = t[0] + width * t[1] + height * t[2];
+        const lat1 = t[3] + width * t[4] + height * t[5];
+        const lon2 = t[0] + width * t[1];
+        const lat2 = t[3] + width * t[4];
+        const lon3 = t[0] + height * t[2];
+        const lat3 = t[3] + height * t[5];
+
+        if (map.getLayer('viewshed-layer')) map.removeLayer('viewshed-layer');
+        if (map.getSource('viewshed-source')) map.removeSource('viewshed-source');
+
+        viewshedCanvas = canvas;
+        map.addSource('viewshed-source', {
+            type: 'canvas',
+            canvas: viewshedCanvas,
+            coordinates: [
+                [lon0, lat0],
+                [lon2, lat2],
+                [lon1, lat1],
+                [lon3, lat3]
+            ],
+            animate: false
+        });
+        map.addLayer({
+            id: 'viewshed-layer',
+            type: 'raster',
+            source: 'viewshed-source',
+            paint: { 'raster-opacity': 0.78, 'raster-fade-duration': 0 }
+        });
+
+        if (!viewshedBoundsFitted) {
+            map.fitBounds(
+                [[Math.min(lon0, lon1, lon2, lon3), Math.min(lat0, lat1, lat2, lat3)],
+                 [Math.max(lon0, lon1, lon2, lon3), Math.max(lat0, lat1, lat2, lat3)]],
+                { padding: 35, duration: 700, maxZoom: 11 }
+            );
+            viewshedBoundsFitted = true;
+        }
+        setResults(
+            `<strong>Viewshed calculé</strong><br>` +
+            `Observateur : ${data.longitude.toFixed(6)}, ${data.latitude.toFixed(6)}<br>` +
+            `Hauteur AGL : ${data.hauteur_observateur.toFixed(1)} m<br>` +
+            `Rayon : ${(data.rayon_metres / 1000).toFixed(2)} km<br>` +
+            `Grille : ${width} × ${height} pixels<br>` +
+            `Pixels visibles : <strong>${data.pixels_visibles.toLocaleString('fr-FR')}</strong><br>` +
+            `Part visible : ${(100 * data.pixels_visibles / values.length).toFixed(2)} %`
+        );
+    }
+
+    async function runViewshed() {
+        if (!mapReady) return;
+        runButton.disabled = true;
+        setMapStatus('Calcul du viewshed…');
+        setResults('Calcul du viewshed en cours…', true);
+        try {
+            const body = {
+                longitude: getNumber(longitudeInput, 'Longitude'),
+                latitude: getNumber(latitudeInput, 'Latitude'),
+                hauteur_observateur: getNumber(flightAltitudeInput, 'Hauteur', 0),
+                rayon_metres: getNumber(radiusInput, 'Rayon', 1)
+            };
+            updateObserver(body.longitude, body.latitude);
+            const data = await postJson('/api/viewshed', body);
+            displayViewshed(data);
+            setMapStatus('Viewshed actualisé');
+        } catch (error) {
+            setResults(`<span class="bad">${escapeHtml(error.message)}</span>`);
+            setMapStatus('Erreur de calcul');
+        } finally {
+            runButton.disabled = false;
         }
     }
 
-    longitudeInput.addEventListener('change', updateMarkerFromInputs);
-    latitudeInput.addEventListener('change', updateMarkerFromInputs);
+    async function runLos() {
+        if (analysisPoints.length !== 2) {
+            setResults('Clique deux fois sur la carte pour définir le point A puis le point B.', true);
+            return;
+        }
+        runButton.disabled = true;
+        setMapStatus('Analyse LOS…');
+        try {
+            const height = getNumber(observerHeightInput, 'Hauteur', 0);
+            const point = coords => ({
+                longitude: coords[0], latitude: coords[1], hauteur: height
+            });
+            const data = await postJson('/api/los', {
+                point_a: point(analysisPoints[0]),
+                point_b: point(analysisPoints[1])
+            });
+            setAnalysisFeatures([
+                lineFeature(analysisPoints, data.visible),
+                ...analysisPoints.map(pointFeature)
+            ]);
+            setResults(
+                `<strong>Intervisibilité : <span class="${data.visible ? '' : 'bad'}">${data.visible ? 'VISIBLE' : 'NON VISIBLE'}</span></strong><br>` +
+                `Distance : ${(data.distance_metres / 1000).toFixed(3)} km<br>` +
+                `Angle vertical : ${data.angle_vertical.toFixed(4)}°`
+            );
+            setMapStatus('Analyse LOS terminée');
+        } catch (error) {
+            setResults(`<span class="bad">${escapeHtml(error.message)}</span>`);
+            setMapStatus('Erreur de calcul');
+        } finally { runButton.disabled = false; }
+    }
 
-    const analysisMode = document.getElementById('analysis-mode');
-    const flightField = document.getElementById('flight-field');
+    async function runRoute() {
+        if (analysisPoints.length < 2) {
+            setResults('Clique au moins deux points sur la carte pour construire la route.', true);
+            return;
+        }
+        runButton.disabled = true;
+        setMapStatus('Analyse de la route…');
+        try {
+            const height = getNumber(observerHeightInput, 'Hauteur', 0);
+            const points = analysisPoints.map(coords => ({
+                longitude: coords[0], latitude: coords[1], hauteur: height
+            }));
+            const data = await postJson('/api/route', { points });
+            const features = [];
+            for (let i = 0; i < analysisPoints.length - 1; i++) {
+                features.push(lineFeature(
+                    [analysisPoints[i], analysisPoints[i + 1]],
+                    data.segments[i] ? data.segments[i].visible : false
+                ));
+            }
+            analysisPoints.forEach((coords, index) => features.push(pointFeature(coords, index)));
+            setAnalysisFeatures(features);
+            const segments = data.segments.map((segment, index) =>
+                `Segment ${index + 1} : ${segment.visible ? 'visible' : 'masqué'} (${(segment.distance_metres / 1000).toFixed(2)} km)`
+            ).join('<br>');
+            setResults(
+                `<strong>Route ${data.route_entierement_visible ? 'entièrement visible' : 'partiellement masquée'}</strong><br>` +
+                `Segments : ${data.segments.length}<br>` +
+                `Distance totale : ${(data.distance_totale_metres / 1000).toFixed(3)} km<br>${segments}`
+            );
+            setMapStatus('Analyse route terminée');
+        } catch (error) {
+            setResults(`<span class="bad">${escapeHtml(error.message)}</span>`);
+            setMapStatus('Erreur de calcul');
+        } finally { runButton.disabled = false; }
+    }
 
-    analysisMode.addEventListener('change', function() {
-        flightField.style.display =
-            analysisMode.value === 'viewshed' ? 'block' : 'none';
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[char]));
+    }
+
+    function refreshModeUi() {
+        const mode = modeInput.value;
+        $('flight-field').style.display = mode === 'viewshed' ? 'block' : 'none';
+        $('radius-field').style.display = mode === 'viewshed' ? 'block' : 'none';
+        $('observer-height-field').style.display = mode === 'viewshed' ? 'none' : 'block';
+        if (mode === 'viewshed') {
+            mapInstruction.innerHTML = '<strong>● Observateur</strong> — Clique sur la carte pour déplacer le point';
+            $('interaction-hint').textContent = 'Le viewshed est recalculé après un déplacement ou une modification des paramètres.';
+            runButton.textContent = 'Recalculer le viewshed';
+        } else if (mode === 'intervisibility') {
+            mapInstruction.innerHTML = '<strong>A puis B</strong> — Clique deux fois pour définir les extrémités';
+            $('interaction-hint').textContent = 'Deux clics sur la carte définissent les points A et B. La hauteur est appliquée aux deux points.';
+            runButton.textContent = 'Analyser A → B';
+        } else {
+            mapInstruction.innerHTML = '<strong>Route</strong> — Clique pour ajouter les points du parcours';
+            $('interaction-hint').textContent = 'Ajoute les points de la route dans l’ordre, puis lance l’analyse.';
+            runButton.textContent = 'Analyser la route';
+        }
+        clearAnalysisGraphics();
+        setResults('Aucun calcul effectué.', true);
+        setMapStatus('Mode : ' + (mode === 'viewshed' ? 'Viewshed' : mode === 'route' ? 'Route' : 'Intervisibilité'));
+        if (mode === 'viewshed') scheduleViewshed();
+    }
+
+    function scheduleViewshed() {
+        if (modeInput.value !== 'viewshed') return;
+        clearTimeout(debounceHandle);
+        debounceHandle = setTimeout(runViewshed, 350);
+    }
+
+    map.on('load', () => {
+        mapReady = true;
+        map.addSource('analysis-source', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] }
+        });
+        map.addLayer({
+            id: 'analysis-lines',
+            type: 'line',
+            source: 'analysis-source',
+            filter: ['==', ['geometry-type'], 'LineString'],
+            paint: {
+                'line-color': ['case', ['==', ['get', 'visible'], true], '#39d6ad', '#e16b6b'],
+                'line-width': 4,
+                'line-opacity': 0.95
+            }
+        });
+        map.addLayer({
+            id: 'analysis-points',
+            type: 'circle',
+            source: 'analysis-source',
+            filter: ['==', ['geometry-type'], 'Point'],
+            paint: {
+                'circle-radius': 6,
+                'circle-color': '#f2b84b',
+                'circle-stroke-color': '#ffffff',
+                'circle-stroke-width': 2
+            }
+        });
+        setStatus('Backend connecté', 'ok');
+        setMapStatus('DTED prêt');
+        runViewshed();
     });
 
-    flightField.style.display =
-        analysisMode.value === 'viewshed' ? 'block' : 'none';
-</script>
+    map.on('error', event => {
+        // Les erreurs de tuiles de fond ne signifient pas nécessairement que l'API Rust est indisponible.
+        if (event && event.error) console.warn('Erreur cartographique :', event.error.message);
+    });
 
+    map.on('click', event => {
+        const coords = [event.lngLat.lng, event.lngLat.lat];
+        const mode = modeInput.value;
+
+        if (mode === 'viewshed') {
+            updateObserver(coords[0], coords[1]);
+            scheduleViewshed();
+            return;
+        }
+
+        if (mode === 'intervisibility') {
+            if (analysisPoints.length >= 2) analysisPoints = [];
+            analysisPoints.push(coords);
+            setAnalysisFeatures(analysisPoints.map(pointFeature));
+            setMapStatus(analysisPoints.length === 1 ? 'Point A défini' : 'Points A et B définis');
+            if (analysisPoints.length === 2) runLos();
+            return;
+        }
+
+        analysisPoints.push(coords);
+        setAnalysisFeatures([
+            ...(analysisPoints.length > 1 ? [lineFeature(analysisPoints, true)] : []),
+            ...analysisPoints.map(pointFeature)
+        ]);
+        setMapStatus(`${analysisPoints.length} point(s) de route`);
+        setResults(`${analysisPoints.length} point(s) ajouté(s). Clique sur « Analyser la route » pour calculer.`, true);
+    });
+
+    modeInput.addEventListener('change', refreshModeUi);
+    runButton.addEventListener('click', () => {
+        if (modeInput.value === 'viewshed') runViewshed();
+        else if (modeInput.value === 'intervisibility') runLos();
+        else runRoute();
+    });
+    $('clear-button').addEventListener('click', () => {
+        clearAnalysisGraphics();
+        if (modeInput.value === 'viewshed') {
+            scheduleViewshed();
+        } else {
+            setResults('Sélection effacée.', true);
+            setMapStatus('Sélection effacée');
+        }
+    });
+
+    longitudeInput.addEventListener('change', () => {
+        const lon = Number(longitudeInput.value);
+        const lat = Number(latitudeInput.value);
+        if (Number.isFinite(lon) && Number.isFinite(lat)) {
+            updateObserver(lon, lat, true);
+            scheduleViewshed();
+        }
+    });
+    latitudeInput.addEventListener('change', () => {
+        const lon = Number(longitudeInput.value);
+        const lat = Number(latitudeInput.value);
+        if (Number.isFinite(lon) && Number.isFinite(lat)) {
+            updateObserver(lon, lat, true);
+            scheduleViewshed();
+        }
+    });
+    flightAltitudeInput.addEventListener('change', scheduleViewshed);
+    radiusInput.addEventListener('change', scheduleViewshed);
+
+    refreshModeUi();
+})();
+</script>
 </body>
 </html>

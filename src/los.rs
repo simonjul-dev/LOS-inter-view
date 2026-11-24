@@ -24,7 +24,7 @@ pub struct ResultatRoute {
 }
 
 /// Résultat d'une analyse de visibilité depuis un observateur.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ResultatViewshed {
     pub longitude: f64,
     pub latitude: f64,
@@ -33,6 +33,28 @@ pub struct ResultatViewshed {
     pub largeur: usize,
     pub hauteur: usize,
     pub visibilite: Vec<u8>,
+    pub geotransform: [f64; 6],
+    pub no_data: Option<i16>,
+}
+
+impl ResultatViewshed {
+    pub fn pixels_visibles(&self) -> usize {
+        self.visibilite.iter().filter(|&&pixel| pixel == 1).count()
+    }
+
+    pub fn coordonnees_pixel(&self, colonne: usize, ligne: usize) -> Option<(f64, f64)> {
+        if colonne >= self.largeur || ligne >= self.hauteur {
+            return None;
+        }
+
+        let t = self.geotransform;
+
+        let longitude = t[0] + (colonne as f64 + 0.5) * t[1] + (ligne as f64 + 0.5) * t[2];
+
+        let latitude = t[3] + (colonne as f64 + 0.5) * t[4] + (ligne as f64 + 0.5) * t[5];
+
+        Some((longitude, latitude))
+    }
 }
 
 /// Calcule la distance horizontale entre deux points géographiques.
@@ -190,8 +212,7 @@ pub fn analyser_viewshed(
         return Err("Le pixel de l'observateur ne contient aucune altitude".to_string());
     }
 
-    let altitude_observateur =
-        altitude_pixel as f64 + observateur.hauteur;
+    let altitude_observateur = altitude_pixel as f64 + observateur.hauteur;
 
     let mut visibilite = vec![0u8; largeur * hauteur];
 
@@ -239,25 +260,18 @@ pub fn analyser_viewshed(
             let delta_ligne = ligne as f64 - ligne_centre as f64;
 
             let nombre_echantillons =
-                (delta_colonne.abs().max(delta_ligne.abs()) * 2.0)
-                    .ceil() as usize;
+                (delta_colonne.abs().max(delta_ligne.abs()) * 2.0).ceil() as usize;
 
             let altitude_cible = altitude_cible as f64;
             let mut visible = true;
 
             for echantillon in 1..nombre_echantillons {
-                let proportion =
-                    echantillon as f64 / nombre_echantillons as f64;
+                let proportion = echantillon as f64 / nombre_echantillons as f64;
 
-                let colonne_test = (
-                    colonne_centre as f64
-                    + delta_colonne * proportion
-                ).round() as usize;
+                let colonne_test =
+                    (colonne_centre as f64 + delta_colonne * proportion).round() as usize;
 
-                let ligne_test = (
-                    ligne_centre as f64
-                    + delta_ligne * proportion
-                ).round() as usize;
+                let ligne_test = (ligne_centre as f64 + delta_ligne * proportion).round() as usize;
 
                 if colonne_test >= largeur || ligne_test >= hauteur {
                     visible = false;
@@ -272,15 +286,12 @@ pub fn analyser_viewshed(
                 }
 
                 let altitude_ligne =
-                    altitude_observateur
-                    + (altitude_cible - altitude_observateur) * proportion;
+                    altitude_observateur + (altitude_cible - altitude_observateur) * proportion;
 
                 let correction_courbure =
-                    distance * distance * proportion * (1.0 - proportion)
-                    / (2.0 * rayon_terre);
+                    distance * distance * proportion * (1.0 - proportion) / (2.0 * rayon_terre);
 
-                let altitude_ligne_corrigee =
-                    altitude_ligne - correction_courbure;
+                let altitude_ligne_corrigee = altitude_ligne - correction_courbure;
 
                 if altitude_test as f64 >= altitude_ligne_corrigee {
                     visible = false;
@@ -301,6 +312,8 @@ pub fn analyser_viewshed(
         largeur,
         hauteur,
         visibilite,
+        geotransform: transform,
+        no_data,
     })
 }
 
